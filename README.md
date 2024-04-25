@@ -44,6 +44,7 @@ func main() {
 	defer cancel()
 
 	client := socks4.New(target, proxy)
+        //				uid byte, null if not required
 	if err := client.Connect([]byte{0x00}, ctx); err != nil {
 		log.Fatal(err)
 	}
