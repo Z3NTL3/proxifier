@@ -2,7 +2,7 @@
 
 Reliable, multi-tasked and swift SOCKS connect client. Implements version ``4/4a/5.``
 
-Used as production at `<a href="https://pro.simpaix.net">`**Lightning CLI `</a>`**
+Used as production at <a href="https://pro.simpaix.net">**Lightning CLI </a>**
 
 #### TODO
 
@@ -16,7 +16,7 @@ Used as production at `<a href="https://pro.simpaix.net">`**Lightning CLI `</a>`
 ##### Socks4 TLS
 
 ```go
-package main
+  	package main
 
 import (
 	"context"
@@ -48,8 +48,8 @@ func main() {
 		log.Fatal(err)
 	}
 	defer client.Close()
-    
     client.SetLinger(0)
+
 	tlsConn := tls.Client(client, &tls.Config{
 		InsecureSkipVerify: true,
 	})
