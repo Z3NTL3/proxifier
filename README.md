@@ -2,7 +2,7 @@
 
 Reliable, multi-tasked and swift SOCKS connect client. Implements version ``4/4a/5.``
 
-Used as production at <a href="https://pro.simpaix.net">**Lightning CLI </a>**
+Used in production at <a href="https://pro.simpaix.net">**Lightning CLI </a>**
 
 #### TODO
 
@@ -44,6 +44,7 @@ func main() {
 	defer cancel()
 
 	client := socks4.New(target, proxy)
+        //				uid byte, null if not required
 	if err := client.Connect([]byte{0x00}, ctx); err != nil {
 		log.Fatal(err)
 	}
