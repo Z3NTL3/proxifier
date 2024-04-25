@@ -79,8 +79,7 @@ func (c *Socks4Client) Connect(uid []byte, ctx context.Context) error {
 		}
 
 		c.TCPConn = conn
-
-		go c.sent_packet(cp_uid)
+		go c.send_packet(cp_uid)
 	}(c, uid)
 
 	select {
@@ -92,7 +91,7 @@ func (c *Socks4Client) Connect(uid []byte, ctx context.Context) error {
 	}
 }
 
-func (c *Socks4Client) sent_packet(uid []byte) {
+func (c *Socks4Client) send_packet(uid []byte) {
 	var err error
 	defer func(client *Socks4Client, err_ *error) {
 		panicErr := recover()
