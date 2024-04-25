@@ -1,21 +1,3 @@
-![1714045920235](image/README/1714045920235.png)
-
-Reliable, multi-tasked and swift SOCKS connect client. Implements version ``4/4a/5.``
-
-Used as production at <a href="https://pro.simpaix.net">**Lightning CLI </a>**
-
-#### TODO
-
-* [X] TLS support
-* [X] Version ``4`` support
-* [ ] Version ``4/a`` support
-* [ ] Version ``5`` support
-
-### Example
-
-##### Socks4 TLS
-
-```go
 package main
 
 import (
@@ -47,8 +29,8 @@ func main() {
 	if err := client.Connect([]byte{0x00}, ctx); err != nil {
 		log.Fatal(err)
 	}
+	client.SetLinger(0)
 	defer client.Close()
-    client.SetLinger(0)
 
 	tlsConn := tls.Client(client, &tls.Config{
 		InsecureSkipVerify: true,
@@ -84,5 +66,3 @@ X-Frame-Options: SAMEORIGIN
 Set-Cookie: AEC=AQTF6Hzw6A6ZGFOvhD3drLEnFNyCI1dNJP9JHdaJDYhhRxi9TQzpSdZFKtc; expires=Tue, 22-Oct-2024 11:47:20 GMT; path=/; domain=.google.com; Secure; HttpOnly; SameSite=lax
 Set-Cookie: __Secure-ENID=19.SE=U-7cnG-S9fxFKtZu3R4-0LGlPETmvWv_6bWCLbNy0_veLAXQaSb_HSzDzHyB1kZLs2fO1SfYJFzppeVWaeoghIjZHm_FdZNJ3o3IZU-0tP7s-MIypoHzA
 */
-
-```
