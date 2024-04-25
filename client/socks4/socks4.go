@@ -44,7 +44,7 @@ func New(target client.TargetCtx, proxy client.ProxyCtx) *Socks4Client {
 		proxy:  proxy,
 		worker: make(chan struct {
 			err error
-		}, 2),
+		}),
 	}
 }
 

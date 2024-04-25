@@ -48,7 +48,7 @@ func main() {
 		log.Fatal(err)
 	}
 	defer client.Close()
-    	client.SetLinger(0)
+    client.SetLinger(0)
 
 	tlsConn := tls.Client(client, &tls.Config{
 		InsecureSkipVerify: true,
