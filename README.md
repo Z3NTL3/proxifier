@@ -2,7 +2,7 @@
 
 Reliable, multi-tasked and swift SOCKS connect client. Implements version ``4/4a/5.``
 
-Used as production at `<a href="https://pro.simpaix.net">`**Lightning CLI `</a>`**
+Used as production at <a href="https://pro.simpaix.net">**Lightning CLI </a>**
 
 #### TODO
 
