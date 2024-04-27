@@ -19,8 +19,8 @@ func TestSocks4Client(t *testing.T) {
 	}
 
 	proxy := client.ProxyCtx{
-		IP:   net.ParseIP("209.126.7.172"),
-		Port: 13637,
+		IP:   net.ParseIP("45.81.232.17"),
+		Port: 30717,
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*15)
@@ -63,7 +63,7 @@ func TestSocks4Client(t *testing.T) {
         Content-Length: 14
         Connection: close
 
-        209.126.7.172
+        45.81.232.17
 
 --- PASS: TestSocks4Client (1.20s)
 PASS

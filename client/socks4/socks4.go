@@ -40,9 +40,7 @@ type Socks4Client struct {
 	*net.TCPConn
 	target client.TargetCtx
 	proxy  client.ProxyCtx
-	worker chan struct {
-		err error
-	}
+	worker chan error
 }
 
 /*
@@ -55,9 +53,7 @@ func New(target client.TargetCtx, proxy client.ProxyCtx) (*Socks4Client, error) 
 	return &Socks4Client{
 		target: target,
 		proxy:  proxy,
-		worker: make(chan struct {
-			err error
-		}),
+		worker: make(chan error),
 	}, nil
 }
 
@@ -82,9 +78,7 @@ func (c *Socks4Client) Connect(uid []byte, ctx context.Context) error {
 			Port: c.proxy.Port,
 		})
 		if err != nil {
-			c.worker <- struct {
-				err error
-			}{err: err}
+			c.worker <- err
 			return
 		}
 
@@ -95,25 +89,22 @@ func (c *Socks4Client) Connect(uid []byte, ctx context.Context) error {
 	select {
 	case <-ctx.Done():
 		return ctx.Err()
-	case v := <-c.worker:
+	case err := <-c.worker:
 		close(c.worker)
-		return v.err
+		return err
 	}
 }
 
 func (c *Socks4Client) connection_request(uid []byte) {
 	var err error
-	defer func(client_clone *Socks4Client, err_ *error) {
+	// shallow copy
+	defer func(sh_clone *Socks4Client, err_ *error) {
 		panicErr := recover()
 		if panicErr != nil {
 			*err_ = errors.New(panicErr.(string))
 		}
 
-		client_clone.worker <- struct {
-			err error
-		}{
-			err: *err_,
-		}
+		sh_clone.worker <- *err_
 	}(c, &err)
 
 	var HEADER []byte
