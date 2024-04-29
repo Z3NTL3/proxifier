@@ -47,6 +47,7 @@ type Socks4Client struct {
 Creates a new SOCKS4 Connect client
 */
 func New(target client.Context, proxy client.Context) (client_ *Socks4Client, err error) {
+	// Deferred functions may read and assign to the returning function’s named return values.
 	defer func() {
 		panicErr := recover()
 		if panicErr != nil {
@@ -147,10 +148,7 @@ func (c *Socks4Client) connection_request(uid []byte) {
 		return
 	}
 
-	switch RESPONSE[1] {
-	case granted:
-		// pass
-	default:
+	if RESPONSE[1] != granted {
 		err = errors.New(reply_enum[RESPONSE[1]])
 	}
 }
