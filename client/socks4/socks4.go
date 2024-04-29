@@ -38,8 +38,8 @@ var (
 
 type Socks4Client struct {
 	*net.TCPConn
-	target client.Context
-	proxy  client.Context
+	target *client.Context
+	proxy  *client.Context
 	worker chan error
 }
 
@@ -63,8 +63,8 @@ func New(target client.Context, proxy client.Context) (client_ *Socks4Client, er
 
 	client_ = new(Socks4Client)
 	{
-		client_.target = target
-		client_.proxy = proxy
+		client_.target = &target
+		client_.proxy = &proxy
 		client_.worker = make(chan error)
 	}
 
