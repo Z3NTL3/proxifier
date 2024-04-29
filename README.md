@@ -9,6 +9,10 @@ Reliable, multi-tasked and swift SOCKS connect client. Implements version ``4/4a
 * [ ] Version ``4/a`` support
 * [ ] Version ``5`` support
 
+#### Note
+- SOCKS4 has been completely implemented for CONNECT
+- SOCKS5 implementation has support for ``USER_PASS`` and ``NO_AUTH`` for CONNECT.
+
 ### Example
 
 ##### Socks4 TLS
@@ -30,14 +34,14 @@ import (
 )
 
 func main() {
-	target := client.TargetCtx{
-		IP:   net.ParseIP("149.202.52.226"),
-		Port: 443,
+	target := client.Context{
+		Resolver: net.ParseIP("149.202.52.226"),
+		Port:     443,
 	}
 
-	proxy := client.ProxyCtx{
-		IP:   net.ParseIP("209.126.7.172"),
-		Port: 13637,
+	proxy := client.Context{
+		Resolver: net.ParseIP("192.162.232.15"),
+		Port:     1080,
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*15)
@@ -72,14 +76,15 @@ func main() {
 }
 
 /*
+❯ go run .
 HTTP/1.1 200 OK
 Server: nginx/1.18.0 (Ubuntu)
-Date: Sat, 27 Apr 2024 18:34:25 GMT
+Date: Mon, 29 Apr 2024 18:44:09 GMT
 Content-Type: text/plain
-Content-Length: 14
+Content-Length: 15
 Connection: close
 
-209.126.7.172
+192.162.232.15
 */
 
 ```

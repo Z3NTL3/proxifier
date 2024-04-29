@@ -6,9 +6,8 @@ package socks4
 import (
 	"context"
 	"encoding/binary"
+	"errors"
 	"net"
-
-	"github.com/go-errors/errors"
 
 	"github.com/z3ntl3/socks/client"
 )
@@ -38,23 +37,37 @@ var reply_enum = map[reply]string{
 
 type Socks4Client struct {
 	*net.TCPConn
-	target client.TargetCtx
-	proxy  client.ProxyCtx
+	target client.Context
+	proxy  client.Context
 	worker chan error
 }
 
 /*
 Creates a new SOCKS4 Connect client
 */
-func New(target client.TargetCtx, proxy client.ProxyCtx) (*Socks4Client, error) {
-	if err := client.IsIPV4(target.IP, proxy.IP); err != nil {
+func New(target client.Context, proxy client.Context) (client_ *Socks4Client, err error) {
+	defer func() {
+		panicErr := recover()
+		if panicErr != nil {
+			err = panicErr.(error)
+		}
+	}()
+
+	// socks4 client requires net.ip
+	resolvers := []net.IP{target.Resolver.(net.IP), proxy.Resolver.(net.IP)}
+
+	if err := client.IsIPV4(resolvers[0], resolvers[1]); err != nil {
 		return nil, err
 	}
-	return &Socks4Client{
-		target: target,
-		proxy:  proxy,
-		worker: make(chan error),
-	}, nil
+
+	client_ = new(Socks4Client)
+	{
+		client_.target = target
+		client_.proxy = proxy
+		client_.worker = make(chan error)
+	}
+
+	return
 }
 
 /*
@@ -74,7 +87,7 @@ func (c *Socks4Client) Connect(uid []byte, ctx context.Context) error {
 
 	go func() {
 		conn, err := net.DialTCP("tcp", nil, &net.TCPAddr{
-			IP:   c.proxy.IP,
+			IP:   c.proxy.Resolver.(net.IP),
 			Port: c.proxy.Port,
 		})
 		if err != nil {
@@ -115,7 +128,7 @@ func (c *Socks4Client) connection_request(uid []byte) {
 		HEADER = append(HEADER, VERSION)
 		HEADER = append(HEADER, CMD)
 		HEADER = append(HEADER, PORT...)
-		HEADER = append(HEADER, c.target.IP.To4()...)
+		HEADER = append(HEADER, c.target.Resolver.(net.IP).To4()...)
 		HEADER = append(HEADER, uid...)
 
 	}
