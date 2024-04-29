@@ -13,27 +13,28 @@ import (
 )
 
 type (
-	reply = byte
+	reply = byte // convenience
 )
 
+// no export
+// fix: unnecessary types
 const (
-	VERSION byte = 0x04
-	CMD     byte = 0x01
+	version byte = 0x04
+	cmd     byte = 0x01
+	null    byte = 0x00
 
-	NULL byte = 0x00
-
-	GRANTED           reply = 0x5A // Request granted
-	REJECTED_FAILED   reply = 0x5B // Request rejected or failed
-	IDENT_UNREACHABLE reply = 0x5C // Request failed because client is not running identd (or not reachable from server)
-	IDENT_UNVERIFIED  reply = 0x5D // Request failed because client's identd could not confirm the user ID in the request
+	granted reply = 0x5A // Request granted
 )
 
-var reply_enum = map[reply]string{
-	0x5A: "Request granted",
-	0x5B: "Request rejected or failed",
-	0x5C: "Request failed because client is not running identd (or not reachable from server)",
-	0x5D: "Request failed because client's identd could not confirm the user ID in the request",
-}
+var (
+	USER_NULL  []byte = []byte{0x00} // for convenience
+	reply_enum        = map[reply]string{
+		0x5A: "Request granted",
+		0x5B: "Request rejected or failed",
+		0x5C: "Request failed because client is not running identd (or not reachable from server)",
+		0x5D: "Request failed because client's identd could not confirm the user ID in the request",
+	}
+)
 
 type Socks4Client struct {
 	*net.TCPConn
@@ -76,13 +77,13 @@ Connects to the target and tunnels through proxy
 func (c *Socks4Client) Connect(uid []byte, ctx context.Context) error {
 	has_null := false // has termination byte ? (required)
 	for _, b := range uid {
-		if b == NULL {
+		if b == null {
 			has_null = true
 		}
 	}
 
 	if !has_null {
-		uid = append(uid, NULL)
+		uid = append(uid, null)
 	}
 
 	go func() {
@@ -125,8 +126,8 @@ func (c *Socks4Client) connection_request(uid []byte) {
 		PORT := make([]byte, 2)
 		binary.BigEndian.PutUint16(PORT, uint16(c.target.Port))
 
-		HEADER = append(HEADER, VERSION)
-		HEADER = append(HEADER, CMD)
+		HEADER = append(HEADER, version)
+		HEADER = append(HEADER, cmd)
 		HEADER = append(HEADER, PORT...)
 		HEADER = append(HEADER, c.target.Resolver.(net.IP).To4()...)
 		HEADER = append(HEADER, uid...)
@@ -147,7 +148,7 @@ func (c *Socks4Client) connection_request(uid []byte) {
 	}
 
 	switch RESPONSE[1] {
-	case GRANTED:
+	case granted:
 		// pass
 	default:
 		err = errors.New(reply_enum[RESPONSE[1]])

@@ -32,7 +32,7 @@ func TestSocks4Client(t *testing.T) {
 	}
 
 	// socks4.NULL means no user-id.
-	if err := client.Connect([]byte{socks4.NULL}, ctx); err != nil {
+	if err := client.Connect(socks4.USER_NULL, ctx); err != nil {
 		t.Fatal(err)
 	}
 	defer client.Close()
