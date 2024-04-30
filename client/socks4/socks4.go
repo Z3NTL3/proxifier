@@ -147,12 +147,12 @@ func (c *Socks4Client) tunnel(uid []byte) {
 		return
 	}
 
-	RESPONSE := make([]byte, 8)
-	if _, err = c.Read(RESPONSE); err != nil {
+	HEADER = make([]byte, 8)
+	if _, err = c.Read(HEADER); err != nil {
 		return
 	}
 
-	if RESPONSE[1] != granted {
-		err = errors.New(reply_enum[RESPONSE[1]])
+	if HEADER[1] != granted {
+		err = errors.New(reply_enum[HEADER[1]])
 	}
 }
