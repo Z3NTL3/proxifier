@@ -37,16 +37,14 @@ var (
 )
 
 type Socks4Client struct {
-	*net.TCPConn
-	target *client.Context
-	proxy  *client.Context
-	worker chan error
+	client.Client
 }
 
 /*
 Creates a new SOCKS4 Connect client
 */
 func New(target client.Context, proxy client.Context) (client_ *Socks4Client, err error) {
+	// godoc states:
 	// Deferred functions may read and assign to the returning function’s named return values.
 	defer func() {
 		panicErr := recover()
@@ -58,22 +56,24 @@ func New(target client.Context, proxy client.Context) (client_ *Socks4Client, er
 	// socks4 client requires net.ip
 	resolvers := []net.IP{target.Resolver.(net.IP), proxy.Resolver.(net.IP)}
 
-	if err := client.IsIPV4(resolvers[0], resolvers[1]); err != nil {
+	if valid := client.IsIPV4(resolvers[0], resolvers[1]); !valid {
 		return nil, err
 	}
 
 	client_ = new(Socks4Client)
 	{
-		client_.target = &target
-		client_.proxy = &proxy
-		client_.worker = make(chan error)
+		client_.Client = client.Client{
+			Target: target,
+			Proxy:  proxy,
+			Worker: make(chan error),
+		}
 	}
 
 	return
 }
 
 /*
-Connects to the target and tunnels through proxy
+Connects to the target through proxy and returns proxy tunnel
 */
 func (c *Socks4Client) Connect(uid []byte, ctx context.Context) error {
 	has_null := false // has termination byte ? (required)
@@ -89,48 +89,52 @@ func (c *Socks4Client) Connect(uid []byte, ctx context.Context) error {
 
 	go func() {
 		conn, err := net.DialTCP("tcp", nil, &net.TCPAddr{
-			IP:   c.proxy.Resolver.(net.IP),
-			Port: c.proxy.Port,
+			IP:   c.Proxy.Resolver.(net.IP),
+			Port: c.Proxy.Port,
 		})
 		if err != nil {
-			c.worker <- err
+			c.Worker <- err
 			return
 		}
 
 		c.TCPConn = conn
-		go c.connection_request(uid)
+		go c.tunnel(uid)
 	}()
 
 	select {
 	case <-ctx.Done():
 		return ctx.Err()
-	case err := <-c.worker:
-		close(c.worker)
+	case err := <-c.Worker:
+		close(c.Worker)
 		return err
 	}
 }
 
-func (c *Socks4Client) connection_request(uid []byte) {
+func (c *Socks4Client) tunnel(uid []byte) {
 	var err error
 	// shallow copy
 	defer func(sh_clone *Socks4Client, err_ *error) {
+		if *err_ != nil {
+			sh_clone.Close()
+		}
+
 		panicErr := recover()
 		if panicErr != nil {
 			*err_ = errors.New(panicErr.(string))
 		}
 
-		sh_clone.worker <- *err_
+		sh_clone.Worker <- *err_
 	}(c, &err)
 
 	var HEADER []byte
 	{
 		PORT := make([]byte, 2)
-		binary.BigEndian.PutUint16(PORT, uint16(c.target.Port))
+		binary.BigEndian.PutUint16(PORT, uint16(c.Target.Port))
 
 		HEADER = append(HEADER, version)
 		HEADER = append(HEADER, cmd)
 		HEADER = append(HEADER, PORT...)
-		HEADER = append(HEADER, c.target.Resolver.(net.IP).To4()...)
+		HEADER = append(HEADER, c.Target.Resolver.(net.IP).To4()...)
 		HEADER = append(HEADER, uid...)
 
 	}
@@ -138,7 +142,7 @@ func (c *Socks4Client) connection_request(uid []byte) {
 	n, err := c.Write(HEADER)
 	if err != nil || !(n > 0) {
 		if !(n > 0) {
-			err = errors.New("failed sending header packet")
+			err = client.ErrFailedHeaderPacket
 		}
 		return
 	}
