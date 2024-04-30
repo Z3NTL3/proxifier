@@ -126,9 +126,7 @@ func (c *Socks5Client) tunnel() {
 		sh_clone.Worker <- *err_
 	}(c, &err)
 
-	var AUTH byte = 0x00
-
-	n, err := c.Write([]byte{version, uint8(1), AUTH})
+	n, err := c.Write([]byte{version, uint8(1), NO_AUTH})
 	if err != nil || !(n > 0) {
 		if !(n > 0) {
 			err = client.ErrWriteTooSmall
@@ -146,7 +144,7 @@ func (c *Socks5Client) tunnel() {
 		return
 	}
 
-	if !(PACKET[0] == version && PACKET[1] == AUTH) {
+	if !(PACKET[0] == version && PACKET[1] == NO_AUTH) {
 		if PACKET[1] == auth_not_acceptable {
 			err = client.ErrNotAcceptable
 		} else {
@@ -169,6 +167,8 @@ func (c *Socks5Client) tunnel() {
 	PACKET = append(PACKET, 0x01)
 	PACKET = append(PACKET, c.Target.Resolver.(net.IP).To4()...)
 	PACKET = append(PACKET, PORT...)
+
+	PORT = nil // gc
 
 	n, err = c.Write(PACKET)
 	if err != nil || !(n > 0) {

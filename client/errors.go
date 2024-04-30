@@ -3,10 +3,7 @@ package client
 import "errors"
 
 var (
-	ErrNotIpv4 error = errors.New("not a valid ipv4 address")
-	// ErrNotIpv6   error = errors.New("not a valid ipv6 address")
-	// ErrNotDomain error = errors.New("not a domain name")
-	// ErrNotIP     error = errors.New("not a ip address")
+	ErrNotIpv4             error = errors.New("not a valid ipv4 address")
 	ErrNetIP               error = errors.New("should provide net.IP for this client")
 	ErrClientGreeting      error = errors.New("failed sending client greeting packet")
 	ErrFailedHeaderPacket  error = errors.New("failed sending header packet")

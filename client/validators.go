@@ -2,10 +2,7 @@ package client
 
 import (
 	"net"
-	"regexp"
 )
-
-var is_domain = regexp.MustCompile(`^(?i)[a-z0-9-]+(\.[a-z0-9-]+)+\.?$`)
 
 func IsIPV4(inputs ...net.IP) bool {
 	for _, input := range inputs {

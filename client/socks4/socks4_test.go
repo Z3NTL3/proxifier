@@ -1,38 +1,37 @@
-package main
+package socks4_test
 
 import (
 	"context"
 	"crypto/tls"
-	"fmt"
 	"io"
-	"log"
 	"net"
+	"testing"
 	"time"
 
 	"github.com/z3ntl3/socks/client"
 	"github.com/z3ntl3/socks/client/socks4"
 )
 
-func main() {
+func TestSOCKS4TLSClient(t *testing.T) {
 	target := client.Context{
 		Resolver: net.ParseIP("34.196.110.25"),
 		Port:     443,
 	}
 
 	proxy := client.Context{
-		Resolver: net.ParseIP("190.12.95.170"),
-		Port:     37209,
+		Resolver: net.ParseIP("72.206.181.97"),
+		Port:     64943,
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*8)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*15)
 	defer cancel()
 
 	client, err := socks4.New(target, proxy)
 	if err != nil {
-		log.Fatal(err)
+		t.Fatal(err)
 	}
 	if err := client.Connect(socks4.USER_NULL, ctx); err != nil {
-		log.Fatal(err)
+		t.Fatal(err)
 	}
 
 	defer client.Close()
@@ -43,15 +42,15 @@ func main() {
 	})
 
 	if _, err := tlsConn.Write([]byte("GET /ip HTTP/1.1\r\nHost: httpbin.org\r\nConnection: close\r\n\r\n")); err != nil {
-		log.Fatal(err)
+		t.Fatal(err)
 	}
 
 	data, err := io.ReadAll(tlsConn)
 	if err != nil {
-		log.Fatal(err)
+		t.Fatal(err)
 	}
 
-	fmt.Println(string(data))
+	t.Log(string(data))
 }
 
 /*
