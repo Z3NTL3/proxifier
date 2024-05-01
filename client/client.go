@@ -1,6 +1,7 @@
 package client
 
 import (
+	"context"
 	"net"
 )
 
@@ -18,6 +19,7 @@ type (
 	}
 
 	Socks4Client struct {
+		UID []byte
 		Client
 	}
 	Socks5Client struct {
@@ -32,6 +34,7 @@ type (
 
 	SocksClient interface {
 		*Socks4Client | *Socks5Client
+		setup()
 	}
 
 	Command = byte
@@ -57,6 +60,8 @@ func New[T SocksClient](target Context, proxy Context) (client T, err error) {
 		}
 	}()
 
+	client = *new(T)
+
 	props := Client{
 		target: target,
 		proxy:  proxy,
@@ -71,7 +76,7 @@ func New[T SocksClient](target Context, proxy Context) (client T, err error) {
 				err = ErrNotValidIP
 			}
 			client = any(&Socks4Client{
-				props,
+				Client: props,
 			}).(T)
 			
 		case *Socks5Client:
@@ -79,6 +84,14 @@ func New[T SocksClient](target Context, proxy Context) (client T, err error) {
 			if !IsAccepted(target.Resolver, proxy.Resolver) {
 				err = ErrUnsupported
 			}
+
+			domain, ok := props.target.Resolver.(string)
+			if ok {
+				if !IsDomain(domain) {
+					err = ErrNotValidDomain
+				}
+			}
+
 			client = any(&Socks5Client{
 				Client: props,
 				Auth:   Auth{}, // public properties
@@ -88,4 +101,36 @@ func New[T SocksClient](target Context, proxy Context) (client T, err error) {
 	}
 
 	return
+}
+
+/*
+	Tunnels through proxy to target. On failure returns error
+*/
+func Connect[T SocksClient](client T,  ctx context.Context) error {
+	var worker chan error
+
+	client.setup()
+	
+	switch c := any(client).(type) {
+		case *Socks4Client:
+			worker = c.worker
+		case *Socks5Client:
+			if len(c.Username) > 0 && len(c.Password) > 0 {
+				if !MinChar(c.Username, c.Password) {
+					return ErrMax255Char
+				}
+			}
+			worker = c.worker
+		default:
+			return ErrNotValidClient
+	}
+
+	select {
+		case <-ctx.Done():
+			return ctx.Err()
+
+		case err := <-worker:
+			close(worker)
+			return err
+	}
 }

@@ -23,14 +23,15 @@ func TestSOCKS4Client(t *testing.T) {
 		Port:     64943,
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*15)
-	defer cancel()
-
 	client, err := socks.New[*socks.Socks4Client](target, proxy)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if err := client.Connect(socks.UID_NULL, ctx); err != nil {
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*15)
+	defer cancel()
+	
+	if err := socks.Connect(client, ctx); err != nil {
 		t.Fatal(err)
 	}
 

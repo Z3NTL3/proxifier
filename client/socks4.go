@@ -1,7 +1,6 @@
 package client
 
 import (
-	"context"
 	"encoding/binary"
 	"errors"
 	"net"
@@ -12,7 +11,7 @@ type (
 )
 
 const (
-	version byte = 0x04
+	SOCKS4 byte = 0x04
 	granted reply = 0x5A // Request granted
 )
 
@@ -28,18 +27,18 @@ var (
 	}
 )
 
-func (c *Socks4Client) Connect(uid []byte, ctx context.Context) error {
+func (c *Socks4Client) setup(){
 	has_null := false // has termination byte ? (required)
-	for _, b := range uid {
+	for _, b := range c.UID {
 		if b == NULL {
 			has_null = true
 		}
 	}
 
 	if !has_null {
-		uid = append(uid, NULL)
+		c.UID = append(c.UID, NULL)
 	}
-
+	
 	go func() {
 		conn, err := net.DialTCP("tcp", nil, &net.TCPAddr{
 			IP:   c.proxy.Resolver.(net.IP),
@@ -51,17 +50,8 @@ func (c *Socks4Client) Connect(uid []byte, ctx context.Context) error {
 		}
 
 		c.TCPConn = conn
-		go c.tunnel(uid)
+		go c.tunnel(c.UID)
 	}()
-
-	select {
-		case <-ctx.Done():
-			return ctx.Err()
-
-		case err := <-c.worker:
-			close(c.worker)
-			return err
-	}
 }
 
 func (c *Socks4Client) tunnel(uid []byte) {
@@ -85,7 +75,7 @@ func (c *Socks4Client) tunnel(uid []byte) {
 		PORT := make([]byte, 2)
 		binary.BigEndian.PutUint16(PORT, uint16(c.target.Port))
 
-		PACKET = append(PACKET, version)
+		PACKET = append(PACKET, SOCKS4)
 		PACKET = append(PACKET, CMD)
 		PACKET = append(PACKET, PORT...)
 		PACKET = append(PACKET, c.target.Resolver.(net.IP).To4()...)

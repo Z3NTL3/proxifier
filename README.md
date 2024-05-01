@@ -8,7 +8,7 @@ Reliable, multi-tasked and swift SOCKS **connect client**. Implements version ``
 * [x] TLS support - 
 * [x] Version ``4`` 
 * [ ] Version ``4/a`` support
-* [ ] Version ``5`` 
+* [x] Version ``5`` 
 
 #### Example SOCKS4 TLS connection stream 
 ```go

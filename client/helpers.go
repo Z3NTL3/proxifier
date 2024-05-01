@@ -25,9 +25,9 @@ func LookupHost(input string) (addr []string, err error) {
 	}()
 
 	select {
-	// case <-complete:
-	case <-ctx.Done():
-		err = ctx.Err()
+		case <-complete:
+		case <-ctx.Done():
+			err = ctx.Err()
 	}
 	return
 }
@@ -98,4 +98,10 @@ func IsAccepted(inputs ...any) bool {
 	}
 
 	return true
+}
+
+
+func MinChar(username, password string) bool {
+	return (len(username) > 0 && len(username) <= 255 || 
+			len(password) > 0 && len(password) <= 255)
 }
