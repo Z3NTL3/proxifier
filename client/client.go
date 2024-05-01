@@ -34,7 +34,8 @@ type (
 
 	SocksClient interface {
 		*Socks4Client | *Socks5Client
-		setup()
+		setup() chan error
+		init(target,proxy *Context) error
 	}
 
 	Command = byte
@@ -49,81 +50,15 @@ SOCKS version 4/4a/5 client
 
 currently only v4/5
 */
-func New[T SocksClient](target Context, proxy Context) (client T, err error) {
-	// according to go doc
-	// defer func may assign to named returns
-	defer func() {
-		panicErr := recover()
-		if panicErr != nil {
-			err = panicErr.(error)
-			// may also panic but i know its always an error type so
-		}
-	}()
-
-	client = *new(T)
-
-	props := Client{
-		target: target,
-		proxy:  proxy,
-		worker: make(chan error),
-	}
-
-	switch any(client).(type) {
-
-		case *Socks4Client:
-			// not valid ipv 4
-			if !IsIPV4(target.Resolver.(net.IP), proxy.Resolver.(net.IP)) { // may panic
-				err = ErrNotValidIP
-			}
-			client = any(&Socks4Client{
-				Client: props,
-			}).(T)
-			
-		case *Socks5Client:
-			// not ipv 4,6 or is not a host
-			if !IsAccepted(target.Resolver, proxy.Resolver) {
-				err = ErrUnsupported
-			}
-
-			domain, ok := props.target.Resolver.(string)
-			if ok {
-				if !IsDomain(domain) {
-					err = ErrNotValidDomain
-				}
-			}
-
-			client = any(&Socks5Client{
-				Client: props,
-				Auth:   Auth{}, // public properties
-			}).(T)
-		default:
-			err = ErrNotValidClient
-	}
-
-	return
+func New[T SocksClient](client T, target, proxy Context)(T, error) {
+	return client, client.init(&target, &proxy)
 }
 
 /*
 	Tunnels through proxy to target. On failure returns error
 */
 func Connect[T SocksClient](client T,  ctx context.Context) error {
-	var worker chan error
-
-	client.setup()
-	
-	switch c := any(client).(type) {
-		case *Socks4Client:
-			worker = c.worker
-		case *Socks5Client:
-			if len(c.Username) > 0 && len(c.Password) > 0 {
-				if !MinChar(c.Username, c.Password) {
-					return ErrMax255Char
-				}
-			}
-			worker = c.worker
-		default:
-			return ErrNotValidClient
-	}
+	worker := client.setup()
 
 	select {
 		case <-ctx.Done():

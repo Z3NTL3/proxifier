@@ -12,18 +12,18 @@ import (
 )
 
 // go test -timeout 30s -run ^TestSOCKS4Client$ github.com/z3ntl3/socks/client -v
-func TestSOCKS4Client(t *testing.T) {
+func TestSOCKS4Client(t *testing.T){
 	target := socks.Context{
-		Resolver: net.ParseIP("34.196.110.25"),
+		Resolver: net.ParseIP("149.202.52.226"),
 		Port:     443,
 	}
 
 	proxy := socks.Context{
-		Resolver: net.ParseIP("72.206.181.97"),
-		Port:     64943,
+		Resolver: net.ParseIP("174.64.199.82"),
+		Port:     4145	,
 	}
 
-	client, err := socks.New[*socks.Socks4Client](target, proxy)
+	client, err := socks.New(&socks.Socks4Client{},target, proxy)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -42,7 +42,7 @@ func TestSOCKS4Client(t *testing.T) {
 		InsecureSkipVerify: true,
 	})
 
-	if _, err := tlsConn.Write([]byte("GET /ip HTTP/1.1\r\nHost: httpbin.org\r\nConnection: close\r\n\r\n")); err != nil {
+	if _, err := tlsConn.Write([]byte("GET / HTTP/1.1\r\nHost: pool.proxyspace.pro\r\nConnection: close\r\n\r\n")); err != nil {
 		t.Fatal(err)
 	}
 
@@ -55,23 +55,19 @@ func TestSOCKS4Client(t *testing.T) {
 }
 
 /*
-socks on  main [!] via 🐹 v1.22.2 
+socks on  main [✘!] via 🐹 v1.22.2 
 ❯ go test -timeout 30s -run ^TestSOCKS4Client$ github.com/z3ntl3/socks/client -v
 === RUN   TestSOCKS4Client
-    socks4_test.go:52: HTTP/1.1 200 OK
-        Date: Wed, 01 May 2024 11:23:02 GMT
-        Content-Type: application/json
-        Content-Length: 32
-        Connection: close
-        Server: gunicorn/19.9.0
-        Access-Control-Allow-Origin: *
-        Access-Control-Allow-Credentials: true
+HTTP/1.1 200 OK
+Server: nginx/1.18.0 (Ubuntu)
+Date: Wed, 01 May 2024 21:35:09 GMT
+Content-Type: text/plain
+Content-Length: 14
+Connection: close
 
-        {
-          "origin": "72.206.181.97"
-        }
+174.64.199.82
 
---- PASS: TestSOCKS4Client (1.18s)
+--- PASS: TestSOCKS4Client (2.58s)
 PASS
-ok      github.com/z3ntl3/socks/client  1.362s
+ok      github.com/z3ntl3/socks/client  2.775s
 */

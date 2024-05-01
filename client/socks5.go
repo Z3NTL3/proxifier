@@ -28,7 +28,42 @@ var (
 	}
 )
 
-func (c *Socks5Client) setup() {
+func(c *Socks5Client) init(target, proxy *Context) (err error) {
+	// according to go doc
+	// defer func may assign to named returns
+	defer func() {
+		panicErr := recover()
+		if panicErr != nil {
+			err = panicErr.(error)
+			// may also panic but i know its always an error type so
+		}
+	}()
+
+	// not ipv 4,6 or is not a host
+	if !IsAccepted(target.Resolver, proxy.Resolver) &&
+	 IsIP(proxy.Resolver.(net.IP)){
+		err = ErrUnsupported
+	}
+
+
+	domain, ok := target.Resolver.(string)
+	if ok {
+		if !IsDomain(domain) {
+			err = ErrNotValidDomain
+		}
+	}
+
+	c.Client = Client{
+		target: *target,
+		proxy:  *proxy,
+		worker: make(chan error),
+	}
+	c.Auth = Auth{}
+
+	return
+}
+
+func (c *Socks5Client) setup() chan error {
 	go func() {
 		conn, err := net.DialTCP("tcp", nil, &net.TCPAddr{
 			IP:   c.proxy.Resolver.(net.IP),
@@ -42,7 +77,8 @@ func (c *Socks5Client) setup() {
 		c.TCPConn = conn
 		go c.tunnel()
 	}()
-
+	
+	return c.worker
 }
 
 func (c *Socks5Client) tunnel() {

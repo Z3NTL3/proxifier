@@ -11,9 +11,9 @@ Reliable, multi-tasked and swift SOCKS **connect client**. Implements version ``
 * [x] Version ``5`` 
 
 ## Examples
-You can find more in files that include ``_test``
+You may find more examples in ``_test`` files.
 
-#### Example SOCKS4 TLS connection stream 
+#### SOCKS4 TLS
 ```go
 package main
 
@@ -31,16 +31,16 @@ import (
 
 func main() {
 	target := socks.Context{
-		Resolver: net.ParseIP("34.196.110.25"),
+		Resolver: net.ParseIP("149.202.52.226"),
 		Port:     443,
 	}
 
 	proxy := socks.Context{
-		Resolver: net.ParseIP("72.206.181.97"),
-		Port:     64943,
+		Resolver: net.ParseIP("174.64.199.82"),
+		Port:     4145,
 	}
 
-	client, err := socks.New[*socks.Socks4Client](target, proxy)
+	client, err := socks.New(&socks.Socks4Client{}, target, proxy)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -59,7 +59,7 @@ func main() {
 		InsecureSkipVerify: true,
 	})
 
-	if _, err := tlsConn.Write([]byte("GET /ip HTTP/1.1\r\nHost: httpbin.org\r\nConnection: close\r\n\r\n")); err != nil {
+	if _, err := tlsConn.Write([]byte("GET / HTTP/1.1\r\nHost: pool.proxyspace.pro\r\nConnection: close\r\n\r\n")); err != nil {
 		log.Fatal(err)
 	}
 
@@ -70,86 +70,17 @@ func main() {
 
 	fmt.Println(string(data))
 }
+
 /*
-socks on  main via 🐹 v1.22.2 took 2s
-❯ go run main.go
+socks on  main [!] via 🐹 v1.22.2 took 2s
+❯ go run .
 HTTP/1.1 200 OK
-Date: Wed, 01 May 2024 14:42:56 GMT
-Content-Type: application/json
-Content-Length: 32
+Server: nginx/1.18.0 (Ubuntu)
+Date: Wed, 01 May 2024 21:39:44 GMT
+Content-Type: text/plain
+Content-Length: 14
 Connection: close
-Server: gunicorn/19.9.0
-Access-Control-Allow-Origin: *
-Access-Control-Allow-Credentials: true
 
-{
-  "origin": "72.206.181.97"
-}
-
+174.64.199.82
 */
-
-```
-
-
-#### Example SOCKS5 NO AUTH
-```go
-package main
-
-import (
-	"context"
-	"fmt"
-	"io"
-	"log"
-	"net"
-	"time"
-
-	socks "github.com/z3ntl3/socks/client"
-)
-
-func main() {
-	target := socks.Context{
-		Resolver: net.ParseIP("3.211.223.136"),
-		Port:     80,
-	}
-
-	proxy := socks.Context{
-		Resolver: net.ParseIP("38.154.227.167"),
-		Port:     5868,
-	}
-
-	client, err := socks.New[*socks.Socks5Client](target, proxy)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*15)
-	defer cancel()
-
-	if err := socks.Connect(client, ctx); err != nil {
-		log.Fatal(err)
-	}
-
-	defer client.Close()
-	client.SetLinger(0)
-
-	if _, err := client.Write([]byte("GET /ip HTTP/1.1\r\nHost: httpbin.org\r\nConnection: close\r\n\r\n")); err != nil {
-		log.Fatal(err)
-	}
-
-	data, err := io.ReadAll(client)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	fmt.Println(string(data))
-}
-
-/*
-
-{
-  "origin": "38.154.227.167"
-}
-*/
-
 ```

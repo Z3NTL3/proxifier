@@ -10,10 +10,10 @@ import (
 	socks "github.com/z3ntl3/socks/client"
 )
 
-// go test -timeout 30s -run ^TestSOCKS5Client_NoAUTH$ github.com/z3ntl3/socks/client -v
-func TestSOCKS5Client_NoAUTH(t *testing.T) {
+// go test -timeout 30s -run ^TestSOCKS5Client_NoAuth$ github.com/z3ntl3/socks/client -v
+func TestSOCKS5Client_NoAuth(t *testing.T){
 	target := socks.Context{
-		Resolver: net.ParseIP("34.196.110.25"),
+		Resolver: net.ParseIP("149.202.52.226"),
 		Port:     80,
 	}
 
@@ -22,15 +22,14 @@ func TestSOCKS5Client_NoAUTH(t *testing.T) {
 		Port:     5868,
 	}
 
-	client, err := socks.New[*socks.Socks5Client](target, proxy)
+	client, err := socks.New(&socks.Socks5Client{},target, proxy)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*15)
 	defer cancel()
-
+	
 	if err := socks.Connect(client, ctx); err != nil {
 		t.Fatal(err)
 	}
@@ -38,7 +37,8 @@ func TestSOCKS5Client_NoAUTH(t *testing.T) {
 	defer client.Close()
 	client.SetLinger(0)
 
-	if _, err := client.Write([]byte("GET /ip HTTP/1.1\r\nHost: httpbin.org\r\nConnection: close\r\n\r\n")); err != nil {
+
+	if _, err := client.Write([]byte("GET / HTTP/1.1\r\nHost: pool.proxyspace.pro\r\nConnection: close\r\n\r\n")); err != nil {
 		t.Fatal(err)
 	}
 
@@ -51,31 +51,28 @@ func TestSOCKS5Client_NoAUTH(t *testing.T) {
 }
 
 /*
-socks on  main [!?] via 🐹 v1.22.2 took 3s
-❯ go test -timeout 30s -run ^TestSOCKS5Client_NoAUTH$ github.com/z3ntl3/socks/client -v
-=== RUN   TestSOCKS5Client_NoAUTH
-    socks5_test.go:52: ☺&����YHTTP/1.1 200 OK
-        Date: Wed, 01 May 2024 14:04:14 GMT
-        Content-Type: application/json
-        Content-Length: 33
-        Connection: close
-        Server: gunicorn/19.9.0
-        Access-Control-Allow-Origin: *
-        Access-Control-Allow-Credentials: true
+socks on  main [!] via 🐹 v1.22.2 took 2s
+❯ go test -timeout 30s -run ^TestSOCKS5Client_NoAuth$ github.com/z3ntl3/socks/client -v
+=== RUN   TestSOCKS5Client_NoAuth
+☺&����↨HTTP/1.1 200 OK
+Server: nginx/1.18.0 (Ubuntu)
+Date: Wed, 01 May 2024 21:37:10 GMT
+Content-Type: text/plain
+Content-Length: 15
+Connection: close
 
-        {
-          "origin": "38.154.227.167"
-        }
+38.154.227.167
 
---- PASS: TestSOCKS5Client_NoAUTH (2.28s)
+--- PASS: TestSOCKS5Client_NoAuth (1.07s)
 PASS
-ok      github.com/z3ntl3/socks/client  2.468s
+ok      github.com/z3ntl3/socks/client  1.249s
 */
 
-// go  test -timeout 30s -run ^TestSOCKS5Client_Auth$ github.com/z3ntl3/socks/client -v
-func TestSOCKS5Client_Auth(t *testing.T) {
+
+// go test -timeout 30s -run ^TestSOCKS5Client_Auth$ github.com/z3ntl3/socks/client -v
+func TestSOCKS5Client_Auth(t *testing.T){
 	target := socks.Context{
-		Resolver: net.ParseIP("34.196.110.25"),
+		Resolver: net.ParseIP("149.202.52.226"),
 		Port:     80,
 	}
 
@@ -84,17 +81,19 @@ func TestSOCKS5Client_Auth(t *testing.T) {
 		Port:     5868,
 	}
 
-	client, err := socks.New[*socks.Socks5Client](target, proxy)
+	client, err := socks.New(&socks.Socks5Client{},target, proxy)
 	if err != nil {
 		t.Fatal(err)
 	}
-	client.Username = "lqafmzlx"
-	client.Password = "i9mzzjv4qdz2"
-
+	
+	{
+		client.Auth.Username = "lqafmzlx"
+		client.Auth.Password = "i9mzzjv4qdz2"
+	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*15)
 	defer cancel()
-
+	
 	if err := socks.Connect(client, ctx); err != nil {
 		t.Fatal(err)
 	}
@@ -102,7 +101,8 @@ func TestSOCKS5Client_Auth(t *testing.T) {
 	defer client.Close()
 	client.SetLinger(0)
 
-	if _, err := client.Write([]byte("GET /ip HTTP/1.1\r\nHost: httpbin.org\r\nConnection: close\r\n\r\n")); err != nil {
+
+	if _, err := client.Write([]byte("GET / HTTP/1.1\r\nHost: pool.proxyspace.pro\r\nConnection: close\r\n\r\n")); err != nil {
 		t.Fatal(err)
 	}
 
@@ -113,25 +113,21 @@ func TestSOCKS5Client_Auth(t *testing.T) {
 
 	t.Log(string(data))
 }
+
 /*
-socks on  main [!?] via 🐹 v1.22.2 
-❯ go  test -timeout 30s -run ^TestSOCKS5Client_Auth$ github.com/z3ntl3/socks/client -v
+socks on  main [!] via 🐹 v1.22.2 took 2s
+❯ go test -timeout 30s -run ^TestSOCKS5Client_Auth$ github.com/z3ntl3/socks/client -v
 === RUN   TestSOCKS5Client_Auth
-    socks5_test.go:113: ☺&���ΏHTTP/1.1 200 OK
-        Date: Wed, 01 May 2024 14:26:52 GMT
-        Content-Type: application/json
-        Content-Length: 33
-        Connection: close
-        Server: gunicorn/19.9.0
-        Access-Control-Allow-Origin: *
-        Access-Control-Allow-Credentials: true
+☺&�㧧UHTTP/1.1 200 OK
+Server: nginx/1.18.0 (Ubuntu)
+Date: Wed, 01 May 2024 21:38:28 GMT
+Content-Type: text/plain
+Content-Length: 15
+Connection: close
 
-        {
-          "origin": "38.154.227.167"
-        }
+38.154.227.167
 
---- PASS: TestSOCKS5Client_Auth (1.65s)
+--- PASS: TestSOCKS5Client_Auth (1.35s)
 PASS
-ok      github.com/z3ntl3/socks/client  1.973s
-
+ok      github.com/z3ntl3/socks/client  1.537s
 */

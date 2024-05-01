@@ -27,7 +27,33 @@ var (
 	}
 )
 
-func (c *Socks4Client) setup(){
+func (c *Socks4Client) init(target, proxy *Context) (err error) {
+	// according to go doc
+	// defer func may assign to named returns
+	defer func() {
+		panicErr := recover()
+		if panicErr != nil {
+			err = panicErr.(error)
+			// may also panic but i know its always an error type so
+		}
+	}()
+
+	// not valid ipv 4
+	if !IsIPV4(target.Resolver.(net.IP), proxy.Resolver.(net.IP)) { // may panic
+		return ErrNotValidIP
+	}
+
+	c.Client =  Client{
+		target: *target,
+		proxy:  *proxy,
+		worker: make(chan error),
+	}
+	c.UID = UID_NULL
+	
+	return nil
+}
+
+func (c *Socks4Client) setup() chan error {
 	has_null := false // has termination byte ? (required)
 	for _, b := range c.UID {
 		if b == NULL {
@@ -52,6 +78,8 @@ func (c *Socks4Client) setup(){
 		c.TCPConn = conn
 		go c.tunnel(c.UID)
 	}()
+
+	return c.worker
 }
 
 func (c *Socks4Client) tunnel(uid []byte) {
