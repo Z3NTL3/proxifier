@@ -42,11 +42,11 @@ func (c *Socks4Client) Connect(uid []byte, ctx context.Context) error {
 
 	go func() {
 		conn, err := net.DialTCP("tcp", nil, &net.TCPAddr{
-			IP:   c.Proxy.Resolver.(net.IP),
-			Port: c.Proxy.Port,
+			IP:   c.proxy.Resolver.(net.IP),
+			Port: c.proxy.Port,
 		})
 		if err != nil {
-			c.Worker <- err
+			c.worker <- err
 			return
 		}
 
@@ -58,8 +58,8 @@ func (c *Socks4Client) Connect(uid []byte, ctx context.Context) error {
 		case <-ctx.Done():
 			return ctx.Err()
 
-		case err := <-c.Worker:
-			close(c.Worker)
+		case err := <-c.worker:
+			close(c.worker)
 			return err
 	}
 }
@@ -77,18 +77,18 @@ func (c *Socks4Client) tunnel(uid []byte) {
 			*err_ = errors.New(panicErr.(string))
 		}
 
-		sh_clone.Worker <- *err_
+		sh_clone.worker <- *err_
 	}(c, &err)
 
 	var PACKET []byte
 	{
 		PORT := make([]byte, 2)
-		binary.BigEndian.PutUint16(PORT, uint16(c.Target.Port))
+		binary.BigEndian.PutUint16(PORT, uint16(c.target.Port))
 
 		PACKET = append(PACKET, version)
 		PACKET = append(PACKET, CMD)
 		PACKET = append(PACKET, PORT...)
-		PACKET = append(PACKET, c.Target.Resolver.(net.IP).To4()...)
+		PACKET = append(PACKET, c.target.Resolver.(net.IP).To4()...)
 		PACKET = append(PACKET, uid...)
 
 	}

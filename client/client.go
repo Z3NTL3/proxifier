@@ -12,9 +12,9 @@ type (
 
 	Client struct {
 		*net.TCPConn
-		Target Context
-		Proxy  Context
-		Worker chan error
+		target Context
+		proxy  Context
+		worker chan error
 	}
 
 	Socks4Client struct {
@@ -58,9 +58,9 @@ func New[T SocksClient](target Context, proxy Context) (client T, err error) {
 	}()
 
 	props := Client{
-		Target: target,
-		Proxy:  proxy,
-		Worker: make(chan error),
+		target: target,
+		proxy:  proxy,
+		worker: make(chan error),
 	}
 
 	switch any(client).(type) {
