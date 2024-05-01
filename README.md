@@ -16,7 +16,6 @@ package main
 
 import (
 	"context"
-	"crypto/tls"
 	"fmt"
 	"io"
 	"log"
@@ -28,38 +27,36 @@ import (
 
 func main() {
 	target := socks.Context{
-		Resolver: net.ParseIP("34.196.110.25"),
-		Port:     443,
+		Resolver: net.ParseIP("3.211.223.136"),
+		Port:     80,
 	}
 
 	proxy := socks.Context{
-		Resolver: net.ParseIP("72.206.181.97"),
-		Port:     64943,
+		Resolver: net.ParseIP("38.154.227.167"),
+		Port:     5868,
 	}
+
+	client, err := socks.New[*socks.Socks5Client](target, proxy)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*15)
 	defer cancel()
 
-	client, err := socks.New[*socks.Socks4Client](target, proxy)
-	if err != nil {
-		log.Fatal(err)
-	}
-	if err := client.Connect(socks.UID_NULL, ctx); err != nil {
+	if err := socks.Connect(client, ctx); err != nil {
 		log.Fatal(err)
 	}
 
 	defer client.Close()
 	client.SetLinger(0)
 
-	tlsConn := tls.Client(client, &tls.Config{
-		InsecureSkipVerify: true,
-	})
-
-	if _, err := tlsConn.Write([]byte("GET /ip HTTP/1.1\r\nHost: httpbin.org\r\nConnection: close\r\n\r\n")); err != nil {
+	if _, err := client.Write([]byte("GET /ip HTTP/1.1\r\nHost: httpbin.org\r\nConnection: close\r\n\r\n")); err != nil {
 		log.Fatal(err)
 	}
 
-	data, err := io.ReadAll(tlsConn)
+	data, err := io.ReadAll(client)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -68,19 +65,10 @@ func main() {
 }
 
 /*
-socks on  main [!?] via 🐹 v1.22.2 took 2s
-❯ go run .
-HTTP/1.1 200 OK
-Date: Wed, 01 May 2024 11:24:44 GMT
-Content-Type: application/json
-Content-Length: 32
-Connection: close
-Server: gunicorn/19.9.0
-Access-Control-Allow-Origin: *
-Access-Control-Allow-Credentials: true
 
 {
-  "origin": "72.206.181.97"
+  "origin": "38.154.227.167"
 }
 */
+
 ```
