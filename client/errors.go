@@ -12,4 +12,5 @@ var (
 	ErrReplyToSmall        error = errors.New("reply is to small")
 	ErrAuthFailure         error = errors.New("authentication failed")
 	ErrWriteTooSmall       error = errors.New("write is to small")
+	ErrLookupTimeout       error = errors.New("host lookup timed out")
 )
