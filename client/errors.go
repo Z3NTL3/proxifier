@@ -3,14 +3,8 @@ package client
 import "errors"
 
 var (
-	ErrNotIpv4             error = errors.New("not a valid ipv4 address")
-	ErrNetIP               error = errors.New("should provide net.IP for this client")
-	ErrClientGreeting      error = errors.New("failed sending client greeting packet")
-	ErrFailedHeaderPacket  error = errors.New("failed sending header packet")
-	ErrNotAcceptable       error = errors.New("no acceptable methods were offered")
-	ErrServerChoiceFailure error = errors.New("server choice reply header failure")
-	ErrReplyToSmall        error = errors.New("reply is to small")
-	ErrAuthFailure         error = errors.New("authentication failed")
-	ErrWriteTooSmall       error = errors.New("write is to small")
-	ErrLookupTimeout       error = errors.New("host lookup timed out")
+	ErrNotValidIP error = errors.New("not a valid ipv 4 or 6")
+	ErrUnsupported error = errors.New("unsupported input")
+	ErrNotValidClient error = errors.New("not a valid client")
+	ErrHeaderWrite error = errors.New("failed writing header packet(s)")
 )

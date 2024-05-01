@@ -1,18 +1,18 @@
-package main
+package client_test
 
 import (
 	"context"
 	"crypto/tls"
-	"fmt"
 	"io"
-	"log"
 	"net"
+	"testing"
 	"time"
 
 	socks "github.com/z3ntl3/socks/client"
 )
 
-func main() {
+// go test -timeout 30s -run ^TestSOCKS4Client$ github.com/z3ntl3/socks/client -v
+func TestSOCKS4Client(t *testing.T) {
 	target := socks.Context{
 		Resolver: net.ParseIP("34.196.110.25"),
 		Port:     443,
@@ -28,10 +28,10 @@ func main() {
 
 	client, err := socks.New[*socks.Socks4Client](target, proxy)
 	if err != nil {
-		log.Fatal(err)
+		t.Fatal(err)
 	}
 	if err := client.Connect(socks.UID_NULL, ctx); err != nil {
-		log.Fatal(err)
+		t.Fatal(err)
 	}
 
 	defer client.Close()
@@ -42,30 +42,35 @@ func main() {
 	})
 
 	if _, err := tlsConn.Write([]byte("GET /ip HTTP/1.1\r\nHost: httpbin.org\r\nConnection: close\r\n\r\n")); err != nil {
-		log.Fatal(err)
+		t.Fatal(err)
 	}
 
 	data, err := io.ReadAll(tlsConn)
 	if err != nil {
-		log.Fatal(err)
+		t.Fatal(err)
 	}
 
-	fmt.Println(string(data))
+	t.Log(string(data))
 }
 
 /*
-socks on  main [!?] via 🐹 v1.22.2 took 2s
-❯ go run .
-HTTP/1.1 200 OK
-Date: Wed, 01 May 2024 11:24:44 GMT
-Content-Type: application/json
-Content-Length: 32
-Connection: close
-Server: gunicorn/19.9.0
-Access-Control-Allow-Origin: *
-Access-Control-Allow-Credentials: true
+socks on  main [!] via 🐹 v1.22.2 
+❯ go test -timeout 30s -run ^TestSOCKS4Client$ github.com/z3ntl3/socks/client -v
+=== RUN   TestSOCKS4Client
+    socks4_test.go:52: HTTP/1.1 200 OK
+        Date: Wed, 01 May 2024 11:23:02 GMT
+        Content-Type: application/json
+        Content-Length: 32
+        Connection: close
+        Server: gunicorn/19.9.0
+        Access-Control-Allow-Origin: *
+        Access-Control-Allow-Credentials: true
 
-{
-  "origin": "72.206.181.97"
-}
+        {
+          "origin": "72.206.181.97"
+        }
+
+--- PASS: TestSOCKS4Client (1.18s)
+PASS
+ok      github.com/z3ntl3/socks/client  1.362s
 */
