@@ -22,6 +22,7 @@ type (
 		UID []byte
 		Client
 	}
+
 	Socks5Client struct {
 		Auth
 		Client
