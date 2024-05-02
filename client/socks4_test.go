@@ -20,7 +20,7 @@ func TestSOCKS4Client(t *testing.T){
 
 	proxy := socks.Context{
 		Resolver: net.ParseIP("174.64.199.82"),
-		Port:     4145	,
+		Port:     4145,
 	}
 
 	client, err := socks.New(&socks.Socks4Client{},target, proxy)
@@ -42,7 +42,9 @@ func TestSOCKS4Client(t *testing.T){
 		InsecureSkipVerify: true,
 	})
 
-	if _, err := tlsConn.Write([]byte("GET / HTTP/1.1\r\nHost: pool.proxyspace.pro\r\nConnection: close\r\n\r\n")); err != nil {
+	if _, err := tlsConn.Write(
+		[]byte("GET / HTTP/1.1\r\nHost: pool.proxyspace.pro\r\nConnection: close\r\n\r\n"),
+	); err != nil {
 		t.Fatal(err)
 	}
 

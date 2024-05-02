@@ -18,18 +18,7 @@ func LookupHost(input string) (addr []string, err error) {
 	ctx, cancel := context.WithTimeout(context.Background(), DefaultTimeout_Host)
 	defer cancel()
 
-	complete := make(chan int)
-	go func() {
-		addr, err = net.DefaultResolver.LookupHost(ctx, input)
-		complete <- 1
-	}()
-
-	select {
-		case <-complete:
-		case <-ctx.Done():
-			err = ctx.Err()
-	}
-	return
+	return net.DefaultResolver.LookupHost(ctx, input)
 }
 
 /*
