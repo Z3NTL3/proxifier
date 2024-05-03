@@ -13,8 +13,8 @@ type (
 
 	Client struct {
 		*net.TCPConn
-		target Context
-		proxy  Context
+		target *Context
+		proxy  *Context
 		worker chan error
 	}
 

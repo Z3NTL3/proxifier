@@ -54,8 +54,8 @@ func(c *Socks5Client) init(target, proxy *Context) (err error) {
 	}
 
 	c.Client = Client{
-		target: *target,
-		proxy:  *proxy,
+		target: target,
+		proxy:  proxy,
 		worker: make(chan error),
 	}
 	c.Auth = Auth{}
