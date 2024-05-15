@@ -19,13 +19,13 @@ type (
 	}
 
 	Socks4Client struct {
-		UID []byte
 		Client
+		UID []byte
 	}
 
 	Socks5Client struct {
-		Auth
 		Client
+		Auth
 	}
 
 	Auth struct {
