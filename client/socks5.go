@@ -135,7 +135,7 @@ func (c *Socks5Client) tunnel() {
 		PACKET = append(PACKET, uint8(len(c.Password)))
 		PACKET = append(PACKET, []byte(c.Password)...)
 
-		n, err := c.Write(PACKET)
+		n, err = c.Write(PACKET)
 		if err != nil || !(n > 0) {
 			if !(n > 0) {
 				err = ErrHeaderWrite
@@ -154,6 +154,7 @@ func (c *Socks5Client) tunnel() {
 
 		if !(PACKET[0] == 0x01 && PACKET[1] == 0x00) {
 			err = ErrAuthFailed
+			
 			return
 		}
 	}
