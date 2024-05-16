@@ -3,6 +3,7 @@
 	<div>
 		<img alt="GitHub go.mod Go version" src="https://img.shields.io/github/go-mod/go-version/z3ntl3/socks">
 		<img alt="GitHub Tag" src="https://img.shields.io/github/v/tag/z3ntl3/socks">
+		<img alt="Static Badge" src="https://img.shields.io/badge/author-z3ntl3-blue?style=plastic">
 	</div>
 </div>
 
