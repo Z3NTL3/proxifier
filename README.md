@@ -1,5 +1,5 @@
 <div align="center">
-	<kbd><img src="https://github.com/Z3NTL3/socks/assets/48758770/e4cf48e7-d6e1-4186-a207-0b6a166097ef" width="400" border="1px solid red"></kbd>
+	<kbd><img src="https://github.com/Z3NTL3/socks/assets/48758770/9c91baa2-03df-480b-8c02-4e082a2f28f5" width="400" border="1px solid red"></kbd>
 	<div>
 		<img alt="GitHub go.mod Go version" src="https://img.shields.io/github/go-mod/go-version/z3ntl3/socks">
 		<img alt="GitHub Tag" src="https://img.shields.io/github/v/tag/z3ntl3/socks">
