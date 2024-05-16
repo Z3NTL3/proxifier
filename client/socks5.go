@@ -154,7 +154,6 @@ func (c *Socks5Client) tunnel() {
 
 		if !(PACKET[0] == 0x01 && PACKET[1] == 0x00) {
 			err = ErrAuthFailed
-			
 			return
 		}
 	}
