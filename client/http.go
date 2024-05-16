@@ -32,7 +32,7 @@ func (c *HTTPClient) PROXY(url string, proxy Context, timeout time.Duration) (co
 			err = panicErr.(error)
 		}
 
-		if err != nil {
+		if err != nil && conn != nil {
 			conn.Close()
 		}
 	}()
