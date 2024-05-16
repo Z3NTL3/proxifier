@@ -16,9 +16,9 @@ func TestHTTP(t *testing.T) {
 	httpClient := socks.HTTPClient{}
 
 	conn, err := httpClient.PROXY("https://httpbin.org/ip", socks.Context{
-		Resolver: net.ParseIP("103.153.142.18"),
-		Port: 8080,
-	}, time.Second * 5); if err != nil {
+		Resolver: net.ParseIP("85.209.2.126"),
+		Port: 4444,
+	}, time.Second * 10); if err != nil {
 		t.Fatal(err)
 	}
 	defer conn.Close()
@@ -31,25 +31,25 @@ func TestHTTP(t *testing.T) {
 }
 
 /*
-socks on  main [!?] via 🐹 v1.22.2 
+socks on  main [!] via 🐹 v1.22.2 
 ❯ go test -timeout 30s -run ^TestHTTP$ github.com/z3ntl3/socks/client -v
 === RUN   TestHTTP
 HTTP/1.1 200 OK
 Server: nginx/1.14.0 (Ubuntu)
-Date: Thu, 16 May 2024 17:23:02 GMT
+Date: Thu, 16 May 2024 18:15:35 GMT
 Content-Type: application/json
-Content-Length: 34
+Content-Length: 31
 Connection: close
 Access-Control-Allow-Origin: *
 Access-Control-Allow-Credentials: true
 
 {
-  "origin": "193.162.143.137"
+  "origin": "85.209.2.126"
 }
 
---- PASS: TestHTTP (0.70s)
+--- PASS: TestHTTP (2.28s)
 PASS
-ok      github.com/z3ntl3/socks/client  0.912s
+ok      github.com/z3ntl3/socks/client  2.466s
 */
 
 // go test -timeout 30s -run ^TestHTTPS$ github.com/z3ntl3/socks/client -v

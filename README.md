@@ -1,9 +1,15 @@
-![1714045920235](image/README/1714045920235.png)
+<div align="center">
+	<img src="image/README/1714045920235.png">
+	<div>
+		<img alt="GitHub go.mod Go version" src="https://img.shields.io/github/go-mod/go-version/z3ntl3/socks">
+		<img alt="GitHub Tag" src="https://img.shields.io/github/v/tag/z3ntl3/socks">
+	</div>
+</div>
 
 Reliable, multi-tasked and swift SOCKS **connect client**. Implements version ``4/4a/5``. 
 <br><br>
 As a special case, this library is not a standalone SOCKS protocol client,
-but also does support HTTP proxies. It can dispatch ``HTTP TUNNEL`` and ``HTTP FORWARD`` payload towards HTTP proxy server(s). Tunnel will ensure ``TLS``.
+but also does support HTTP proxies. It can dispatch ``HTTP TUNNEL`` and ``HTTP FORWARD`` payload to HTTP proxy server(s). Tunnel will ensure ``TLS``.
 
 
 #### Features
@@ -21,7 +27,7 @@ but also does support HTTP proxies. It can dispatch ``HTTP TUNNEL`` and ``HTTP F
 
 ## Examples
 
-You may find more examples in ``_test`` files.
+You may find more examples in ``_test`` files. Find them in ``/client`` folder.
 
 #### SOCKS4 TLS
 
