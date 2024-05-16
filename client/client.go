@@ -5,42 +5,41 @@ import (
 	"net"
 )
 
-type (
-	Context struct {
-		Resolver interface{}
-		Port     int
-	}
+type Context struct {
+	Resolver interface{}
+	Port     int
+}
 
-	Client struct {
-		*net.TCPConn
-		target *Context
-		proxy  *Context
-		worker chan error
-	}
+type Client struct {
+	*net.TCPConn
+	target *Context
+	proxy  *Context
+	worker chan error
+}
 
-	Socks4Client struct {
-		Client
-		UID []byte
-	}
+type Socks4Client struct {
+	Client
+	UID []byte
+}
 
-	Socks5Client struct {
-		Client
-		Auth
-	}
+type Socks5Client struct {
+	Client
+	Auth
+}
 
-	Auth struct {
-		Username string
-		Password string
-	}
+type Auth struct {
+	Username string
+	Password string
+}
 
-	SocksClient interface {
-		*Socks4Client | *Socks5Client
-		setup() chan error
-		init(target,proxy *Context) error
-	}
+type SocksClient interface {
+	*Socks4Client | *Socks5Client
+	setup() chan error
+	init(target,proxy *Context) error
+}
 
-	Command = byte
-)
+type Command = byte
+
 const (
 	CMD Command = 0x01 // stream connection
 	NULL byte = 0x00

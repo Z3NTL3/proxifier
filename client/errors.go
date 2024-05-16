@@ -11,4 +11,5 @@ var (
 	ErrMax255Char error = errors.New("can be maximum of 255 charachters")
 	ErrATYP error = errors.New("ATYP not supported")
 	ErrNotValidDomain error = errors.New("not valid domain")
+	ErrNotHTTPSProxy error = errors.New("not a HTTPS proxy")
 )

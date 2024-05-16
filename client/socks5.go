@@ -98,7 +98,7 @@ func (c *Socks5Client) tunnel() {
 	}(c, &err)
 
 	AUTH := no_auth
-	if len(c.Username) > 0 && len(c.Password) > 0 {
+	if len(c.Username) > 0 || len(c.Password) > 0 {
 		AUTH = uname_pwd
 	}
 

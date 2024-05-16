@@ -38,7 +38,7 @@ func (c *Socks4Client) init(target, proxy *Context) (err error) {
 		}
 	}()
 
-	// not valid ipv 4
+	// not valid ipv 4 or 6
 	if !IsIPV4(target.Resolver.(net.IP), proxy.Resolver.(net.IP)) { // may panic
 		return ErrNotValidIP
 	}
