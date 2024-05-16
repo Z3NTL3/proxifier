@@ -175,6 +175,7 @@ func (c *Socks5Client) tunnel() {
 				}
 			case string:
 				PACKET = append(PACKET, 0x03) // 0x03: Domain name
+				PACKET = append(PACKET, uint8(len(ATYP)))
 				PACKET = append(PACKET, []byte(ATYP)...)
 			default:
 				err = ErrATYP
@@ -194,7 +195,8 @@ func (c *Socks5Client) tunnel() {
 			return
 		}
 
-		PACKET = make([]byte, 2)
+		reply := len(PACKET)
+		PACKET = make([]byte, reply)
 
 		n, err = c.Read(PACKET)
 		if err != nil || !(n > 0) {

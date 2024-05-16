@@ -2,6 +2,7 @@ package client_test
 
 import (
 	"context"
+	"crypto/tls"
 	"io"
 	"net"
 	"testing"
@@ -12,9 +13,14 @@ import (
 
 // go test -timeout 30s -run ^TestSOCKS5Client_NoAuth$ github.com/z3ntl3/socks/client -v
 func TestSOCKS5Client_NoAuth(t *testing.T){
+	addr, err := socks.LookupHost("httpbin.org")
+	if err != nil {
+		t.Fatal(err)
+	}
+
 	target := socks.Context{
-		Resolver: net.ParseIP("149.202.52.226"),
-		Port:     80,
+		Resolver: net.ParseIP(addr[0]),
+		Port:     443,
 	}
 
 	proxy := socks.Context{
@@ -38,11 +44,15 @@ func TestSOCKS5Client_NoAuth(t *testing.T){
 	client.SetLinger(0)
 
 
-	if _, err := client.Write([]byte("GET / HTTP/1.1\r\nHost: pool.proxyspace.pro\r\nConnection: close\r\n\r\n")); err != nil {
+	tlsConn := tls.Client(client, &tls.Config{
+		InsecureSkipVerify: true,
+	})
+
+	if _, err := tlsConn.Write([]byte("GET /ip HTTP/1.1\r\nHost: httpbin.org\r\nConnection: close\r\n\r\n")); err != nil {
 		t.Fatal(err)
 	}
 
-	data, err := io.ReadAll(client)
+	data, err := io.ReadAll(tlsConn)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -71,9 +81,14 @@ ok      github.com/z3ntl3/socks/client  1.249s
 
 // go test -timeout 30s -run ^TestSOCKS5Client_Auth$ github.com/z3ntl3/socks/client -v
 func TestSOCKS5Client_Auth(t *testing.T){
+	addr, err := socks.LookupHost("httpbin.org")
+	if err != nil {
+		t.Fatal(err)
+	}
+
 	target := socks.Context{
-		Resolver: net.ParseIP("149.202.52.226"),
-		Port:     80,
+		Resolver: net.ParseIP(addr[0]),
+		Port:     443,
 	}
 
 	proxy := socks.Context{
@@ -101,12 +116,15 @@ func TestSOCKS5Client_Auth(t *testing.T){
 	defer client.Close()
 	client.SetLinger(0)
 
+	tlsConn := tls.Client(client, &tls.Config{
+		InsecureSkipVerify: true,
+	})
 
-	if _, err := client.Write([]byte("GET / HTTP/1.1\r\nHost: pool.proxyspace.pro\r\nConnection: close\r\n\r\n")); err != nil {
+	if _, err := tlsConn.Write([]byte("GET /ip HTTP/1.1\r\nHost: httpbin.org\r\nConnection: close\r\n\r\n")); err != nil {
 		t.Fatal(err)
 	}
 
-	data, err := io.ReadAll(client)
+	data, err := io.ReadAll(tlsConn)
 	if err != nil {
 		t.Fatal(err)
 	}
