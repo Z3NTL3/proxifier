@@ -19,7 +19,7 @@ type Conn  = net.Conn
 
 
 /*
-	Can perform HTTP forward and tunnel requests with to given proxy server.
+	Can perform HTTP forward and tunnel towards proxy server.
 	TLS is ensured on HTTP TUNNEL requests.
 
 	Reference of implementation:
