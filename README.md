@@ -6,13 +6,16 @@ As a special case, this library is not a standalone SOCKS protocol client,
 but also does support HTTP proxies. It can dispatch ``HTTP TUNNEL`` and ``HTTP FORWARD`` payload towards HTTP proxy server(s). Tunnel will ensure ``TLS``.
 
 
-#### TODO
+#### Features
 
-* [X] TLS support
-* [X] Version ``4``
-* [X] Version ``5``
+* [X] TLS 
+* [X] SOCKS4
+* [X] SOCKS5
 * [X] HTTP FORWARD
 * [X] HTTP TUNNEL
+* [X] Auth
+
+##### Todo
 * [ ] Version ``4/a`` support
 
 
