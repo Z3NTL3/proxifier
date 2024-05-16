@@ -10,8 +10,9 @@
 Reliable, multi-tasked and swift SOCKS **connect client**. Implements version ``4/4a/5``. 
 <br><br>
 As a special case, this library is not a standalone SOCKS protocol client,
-but also does support HTTP proxies. It can dispatch ``HTTP TUNNEL`` and ``HTTP FORWARD`` payload to HTTP proxy server(s). Tunnel will ensure ``TLS``.
+but also does support HTTP proxies. It can dispatch ``HTTP TUNNEL`` and ``HTTP FORWARD`` payload to HTTP proxy server(s).
 
+To simplify, basically a hot SOCKS4/SOCKS5/HTTP/HTTPS proxy server client library.
 
 #### Features
 
