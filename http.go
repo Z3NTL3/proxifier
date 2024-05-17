@@ -22,7 +22,6 @@ type Conn = net.Conn
 
 // # Doc
 //
-// Client for
 // Tunnels through given proxy, for HTTPS you should 
 // set [HTTPClient.TLS] to true, which will perform HTTP TUNNEL rather than HTTP Forward. 
 // Defaults to false which is HTTP proxy aka HTTP FORWARD.
