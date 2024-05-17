@@ -16,8 +16,8 @@ Reliable, multi-tasked and swift proxy client library for Go programs.
 * [X] TLS 
 * [X] SOCKS4
 * [X] SOCKS5
-* [X] HTTP FORWARD
-* [X] HTTP TUNNEL
+* [X] HTTP ``(HTTP FORWARD)``
+* [X] HTTPS ``(HTTP TUNNEL)``
 * [X] Auth
 
 ##### Todo
