@@ -1,4 +1,4 @@
-package client
+package proxifier
 
 import (
 	"encoding/binary"
@@ -34,13 +34,14 @@ func (c *Socks4Client) init(target, proxy *Context) (err error) {
 		panicErr := recover()
 		if panicErr != nil {
 			err = panicErr.(error)
-			// may also panic but i know its always an error type so
+			// may also panic but its always an error type so
+			// in our context
 		}
 	}()
 
-	// not valid ipv 4 or 6
+	// not valid IPV4
 	if !IsIPV4(target.Resolver.(net.IP), proxy.Resolver.(net.IP)) { // may panic
-		return ErrNotValidIP
+		return ErrNotIPV4
 	}
 
 	c.Client =  Client{

@@ -1,4 +1,4 @@
-package client
+package proxifier
 
 import (
 	"encoding/binary"
@@ -42,15 +42,21 @@ func(c *Socks5Client) init(target, proxy *Context) (err error) {
 	// not ipv 4,6 or is not a host
 	if !IsAccepted(target.Resolver, proxy.Resolver) &&
 	 IsIP(proxy.Resolver.(net.IP)){
-		err = ErrUnsupported
+		err = ErrATYP
 	}
 
 
 	domain, ok := target.Resolver.(string)
 	if ok {
 		if !IsDomain(domain) {
-			err = ErrNotValidDomain
+			err = ErrDomain
+			return
 		}
+	}
+
+	if !Max255(domain) {
+		err = ErrToBigMax255
+		return
 	}
 
 	c.Client = Client{

@@ -1,4 +1,4 @@
-package client
+package proxifier
 
 import (
 	"context"
@@ -7,13 +7,11 @@ import (
 	"time"
 )
 
-// default timeout for LookupHost
+// Default timeout for LookupHost.
+// Can be changed if desired
 var DefaultTimeout_Host time.Duration = time.Second * 5
 
-/*
-Looks up the domain, very useful for input check before
-providing SOCKS version 5 or 4a with a domain (when you use ATYPE domain)
-*/
+// Resolves domain. Used for input validation
 func LookupHost(input string) (addr []string, err error) {
 	ctx, cancel := context.WithTimeout(context.Background(), DefaultTimeout_Host)
 	defer cancel()
@@ -21,9 +19,7 @@ func LookupHost(input string) (addr []string, err error) {
 	return net.DefaultResolver.LookupHost(ctx, input)
 }
 
-/*
-Check if given IP address is version 4
-*/
+// Reports whether ``inputs`` contain any invalid IPV4 address
 func IsIPV4(inputs ...net.IP) bool {
 	for _, input := range inputs {
 		if input.To4() == nil {
@@ -33,9 +29,7 @@ func IsIPV4(inputs ...net.IP) bool {
 	return true
 }
 
-/*
-Check if given IP address is version 6
-*/
+// Reports whether ``inputs`` contain any invalid IPV6 address.
 func IsIPV6(inputs ...net.IP) bool {
 	for _, input := range inputs {
 		if input.To16() == nil {
@@ -45,17 +39,13 @@ func IsIPV6(inputs ...net.IP) bool {
 	return true
 }
 
-/*
-Wrapper to ease IP version 4 and 6 check
-*/
+// Reports whether ``inputs`` contain any valid IPV4/6 address.
 func IsIP(inputs ...net.IP) bool {
 	check := []bool{IsIPV4(inputs...), IsIPV6(inputs...)}
 	return slices.Contains(check, true)
 }
 
-/*
-Wrapper to ease LookupHost check
-*/
+// Wrapper for LookupHost. To ease up validation.
 func IsDomain(input string) bool {
 	addr, err := LookupHost(input)
 	if err != nil {
@@ -69,9 +59,7 @@ func IsDomain(input string) bool {
 	return false
 }
 
-/*
-Check whether input is IP version 4,6 or given input is a host
-*/
+// Reports whether one of IPV4/6 or host.
 func IsAccepted(inputs ...any) bool {
 	for _, input := range inputs {
 		ip, isIp := input.(net.IP)
@@ -89,8 +77,10 @@ func IsAccepted(inputs ...any) bool {
 	return true
 }
 
-
-func MinChar(username, password string) bool {
-	return (len(username) > 0 && len(username) <= 255 || 
-			len(password) > 0 && len(password) <= 255)
+// Reports whether one of inputs exceed max length of 255
+func Max255(inputs... string) bool {
+	for _, input := range inputs {
+		if !(len(input) <= 255) {return false}
+	}
+	return true
 }
