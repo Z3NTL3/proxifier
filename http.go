@@ -23,16 +23,10 @@ type Conn = net.Conn
 // # Doc
 //
 // Tunnels through given proxy, for HTTPS you should 
-// set [HTTPClient.TLS] to true, which will perform HTTP TUNNEL rather than HTTP Forward. 
-// Defaults to false which is HTTP proxy aka HTTP FORWARD.
+// set [proxifier.HTTPClient] to true, which will perform [HTTPS proxy (HTTP TUNNEL)] rather than [HTTP proxy (HTTP FORWARD)]. 
+// Defaults to false which is HTTP proxy aka [HTTP proxy (HTTP FORWARD)].
 //
 // Only HTTP TUNNEL (HTTPS) allows arbitrary data after initial handshake.
-//
-// # Example
-//
-// See ``tests`` directory for more examples.
-//
-// # Reference
 //
 // [HTTP proxy (HTTP FORWARD)]: https://en.wikipedia.org/wiki/Proxy_server#Implementations_of_proxies
 // [HTTPS proxy (HTTP TUNNEL)]: https://en.wikipedia.org/wiki/HTTP_tunnel#HTTP_CONNECT_method

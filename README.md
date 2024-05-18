@@ -9,7 +9,7 @@
 
 # Proxifier
 
-Reliable, multi-tasked and swift proxy client library for Go programs.
+Reliable proxy client library for Go programs.
 
 #### Features
 
@@ -25,8 +25,6 @@ Reliable, multi-tasked and swift proxy client library for Go programs.
 
 
 ## Examples
-
-You may find more examples in ``_test`` files. Find them in ``/client`` folder.
 
 #### HTTPS AUTH
 
