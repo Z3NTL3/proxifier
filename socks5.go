@@ -40,23 +40,9 @@ func(c *Socks5Client) init(target, proxy *Context) (err error) {
 	}()
 
 	// not ipv 4,6 or is not a host
-	if !IsAccepted(target.Resolver, proxy.Resolver) &&
+	if !IsAccepted(target.Resolver) &&
 	 IsIP(proxy.Resolver.(net.IP)){
 		err = ErrATYP
-	}
-
-
-	domain, ok := target.Resolver.(string)
-	if ok {
-		if !IsDomain(domain) {
-			err = ErrDomain
-			return
-		}
-	}
-
-	if !Max255(domain) {
-		err = ErrToBigMax255
-		return
 	}
 
 	c.Client = Client{

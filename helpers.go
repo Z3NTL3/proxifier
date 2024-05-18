@@ -45,8 +45,10 @@ func IsIP(inputs ...net.IP) bool {
 	return slices.Contains(check, true)
 }
 
-// Wrapper for LookupHost. To ease up validation.
-func IsDomain(input string) bool {
+// Wrapper for LookupHost. With additional validation.
+func ValidateDomain(input string) bool {
+	if !Max255(input) {return false}
+
 	addr, err := LookupHost(input)
 	if err != nil {
 		return false
@@ -67,7 +69,7 @@ func IsAccepted(inputs ...any) bool {
 		if !isIp || !IsIP(ip) {
 			domain, isDomain := input.(string)
 
-			if !IsDomain(domain) || !isDomain {
+			if !ValidateDomain(domain) || !isDomain {
 				return false
 			}
 			continue
@@ -80,7 +82,7 @@ func IsAccepted(inputs ...any) bool {
 // Reports whether one of inputs exceed max length of 255
 func Max255(inputs... string) bool {
 	for _, input := range inputs {
-		if !(len(input) <= 255) {return false}
+		if len(input) > 255 {return false}
 	}
 	return true
 }

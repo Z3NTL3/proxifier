@@ -1,4 +1,4 @@
-package client_test
+package proxifier_test
 
 import (
 	"context"
