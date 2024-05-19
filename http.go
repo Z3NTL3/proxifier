@@ -35,10 +35,6 @@ func (c *HTTPClient) PROXY(url string, proxy Context, timeout time.Duration) (co
 		if panicErr := recover(); panicErr != nil {
 			err = panicErr.(error)
 		}
-
-		if err != nil && conn != nil {
-			conn.Close()
-		}
 	}()
 
 	// not valid IPV4/6
