@@ -86,18 +86,18 @@ func (c *Socks4Client) setup() chan error {
 func (c *Socks4Client) tunnel(uid []byte) {
 	var err error
 	// shallow copy
-	defer func(sh_clone *Socks4Client, err_ *error) {
-		if *err_ != nil {
-			sh_clone.Close()
+	defer func() {
+		if err != nil {
+			c.Close()
 		}
 
 		panicErr := recover()
 		if panicErr != nil {
-			*err_ = errors.New(panicErr.(string))
+			err = errors.New(panicErr.(string))
 		}
 
-		sh_clone.worker <- *err_
-	}(c, &err)
+		c.worker <- err
+	}()
 
 	var PACKET []byte
 	{

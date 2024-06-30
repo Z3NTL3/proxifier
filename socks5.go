@@ -76,18 +76,18 @@ func (c *Socks5Client) setup() chan error {
 func (c *Socks5Client) tunnel() {
 	var err error
 	// shallow copy
-	defer func(sh_clone *Socks5Client, err_ *error) {
-		if *err_ != nil {
-			sh_clone.Close()
+	defer func() {
+		if err != nil {
+			c.Close()
 		}
 
 		panicErr := recover()
 		if panicErr != nil {
-			*err_ = errors.New(panicErr.(string))
+			err = errors.New(panicErr.(string))
 		}
 
-		sh_clone.worker <- *err_
-	}(c, &err)
+		c.worker <- err
+	}()
 
 	AUTH := no_auth
 	if len(c.Username) > 0 || len(c.Password) > 0 {
