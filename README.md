@@ -9,19 +9,22 @@
 
 # Proxifier
 
-Reliable proxy client library for Go programs.
+Reliable proxy client library for Go programs with no dependency.
 
 #### Features
 
-* [X] TLS 
-* [X] SOCKS4
-* [X] SOCKS5
-* [X] HTTP ``(HTTP FORWARD)``
-* [X] HTTPS ``(HTTP TUNNEL)``
-* [X] Auth
+- [x] TLS - tunneling through outer layer
+- [x] SOCKS4
+- [x] SOCKS5
+- [x] HTTP `(HTTP FORWARD)`
+- [x] HTTPS `(HTTP TUNNEL)`
+- [x] Auth
+- [ ] Plugin ecosystem
 
 ##### Todo
-* [ ] SOCKS``4/a`` support
+
+- [ ] SOCKS`4/a` support
 
 ### Documentation
+
 [Docs](https://proxifier.z3ntl3.com)

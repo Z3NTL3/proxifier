@@ -12,7 +12,7 @@ import (
 )
 
 // go test -timeout 30s -run ^TestSOCKS4Client$ github.com/Z3NTL3/proxifier/tests -v
-func TestSOCKS4Client(t *testing.T){
+func TestSOCKS4Client(t *testing.T) {
 	addr, err := proxifier.LookupHost("pool.proxyspace.pro")
 	if err != nil {
 		t.Fatal(err)
@@ -24,18 +24,18 @@ func TestSOCKS4Client(t *testing.T){
 	}
 
 	proxy := proxifier.Context{
-		Resolver: net.ParseIP("174.64.199.82"),
+		Resolver: net.ParseIP("184.182.240.211"),
 		Port:     4145,
 	}
 
-	client, err := proxifier.New(&proxifier.Socks4Client{},target, proxy)
+	client, err := proxifier.New(&proxifier.Socks4Client{}, target, proxy)
 	if err != nil {
 		t.Fatal(err)
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*15)
 	defer cancel()
-	
+
 	if err := proxifier.Connect(client, ctx); err != nil {
 		t.Fatal(err)
 	}
@@ -60,6 +60,7 @@ func TestSOCKS4Client(t *testing.T){
 
 	t.Log(string(data))
 }
+
 /*
 socks on  main [!] via 🐹 v1.22.2 took 3s
 ❯ go test -timeout 30s -run ^TestSOCKS4Client$ github.com/Z3NTL3/proxifier/tests -v

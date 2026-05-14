@@ -12,7 +12,7 @@ import (
 )
 
 // go test -timeout 30s -run ^TestSOCKS5Client_NoAuth$ github.com/Z3NTL3/proxifier/tests -v
-func TestSOCKS5Client_NoAuth(t *testing.T){
+func TestSOCKS5Client_NoAuth(t *testing.T) {
 	addr, err := proxifier.LookupHost("httpbin.org")
 	if err != nil {
 		t.Fatal(err)
@@ -24,25 +24,24 @@ func TestSOCKS5Client_NoAuth(t *testing.T){
 	}
 
 	proxy := proxifier.Context{
-		Resolver: net.ParseIP("38.154.227.167"),
-		Port:     5868,
+		Resolver: net.ParseIP("219.93.101.60"),
+		Port:     80,
 	}
 
-	client, err := proxifier.New(&proxifier.Socks5Client{},target, proxy)
+	client, err := proxifier.New(&proxifier.Socks5Client{}, target, proxy)
 	if err != nil {
 		t.Fatal(err)
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*15)
 	defer cancel()
-	
+
 	if err := proxifier.Connect(client, ctx); err != nil {
 		t.Fatal(err)
 	}
 
 	defer client.Close()
 	client.SetLinger(0)
-
 
 	tlsConn := tls.Client(client, &tls.Config{
 		InsecureSkipVerify: true,
@@ -59,8 +58,9 @@ func TestSOCKS5Client_NoAuth(t *testing.T){
 
 	t.Log(string(data))
 }
+
 /*
-socks on  main [!] via 🐹 v1.22.2 
+socks on  main [!] via 🐹 v1.22.2
 ❯ go test -timeout 30s -run ^TestSOCKS5Client_NoAuth$ github.com/Z3NTL3/proxifier/tests -v
 === RUN   TestSOCKS5Client_NoAuth
     socks5_test.go:60: HTTP/1.1 200 OK
@@ -81,9 +81,8 @@ PASS
 ok      github.com/Z3NTL3/proxifier/tests      1.644s
 */
 
-
 // go test -timeout 30s -run ^TestSOCKS5Client_Auth$ github.com/Z3NTL3/proxifier/tests -v
-func TestSOCKS5Client_Auth(t *testing.T){
+func TestSOCKS5Client_Auth(t *testing.T) {
 	addr, err := proxifier.LookupHost("httpbin.org")
 	if err != nil {
 		t.Fatal(err)
@@ -99,11 +98,11 @@ func TestSOCKS5Client_Auth(t *testing.T){
 		Port:     5868,
 	}
 
-	client, err := proxifier.New(&proxifier.Socks5Client{},target, proxy)
+	client, err := proxifier.New(&proxifier.Socks5Client{}, target, proxy)
 	if err != nil {
 		t.Fatal(err)
 	}
-	
+
 	{
 		client.Auth.Username = "lqafmzlx"
 		client.Auth.Password = "i9mzzjv4qdz2"
@@ -111,7 +110,7 @@ func TestSOCKS5Client_Auth(t *testing.T){
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*15)
 	defer cancel()
-	
+
 	if err := proxifier.Connect(client, ctx); err != nil {
 		t.Fatal(err)
 	}
@@ -134,6 +133,7 @@ func TestSOCKS5Client_Auth(t *testing.T){
 
 	t.Log(string(data))
 }
+
 /*
 socks on  main [!] via 🐹 v1.22.2 took 2s
 ❯ go test -timeout 30s -run ^TestSOCKS5Client_Auth$ github.com/Z3NTL3/proxifier/tests -v

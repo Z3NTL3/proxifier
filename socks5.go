@@ -6,16 +6,16 @@ import (
 	"net"
 )
 
-type status = byte
+type Status = byte
 
 const (
-	SOCKS5 byte = 0x05
-	no_auth byte = 0x00
-	uname_pwd byte = 0x02
+	SOCKS5    byte = 0x05
+	NO_AUTH   byte = 0x00
+	UNAME_PWD byte = 0x02
 )
 
 var (
-	status_enum = map[status]string{
+	status_enum = map[Status]string{
 		0x00: "request granted",
 		0x01: "general failure",
 		0x02: "connection not allowed by ruleset",
@@ -28,7 +28,7 @@ var (
 	}
 )
 
-func(c *Socks5Client) init(target, proxy *Context) (err error) {
+func (c *Socks5Client) init(target, proxy *Context) (err error) {
 	// according to go doc
 	// defer func may assign to named returns
 	defer func() {
@@ -41,7 +41,7 @@ func(c *Socks5Client) init(target, proxy *Context) (err error) {
 
 	// not ipv 4,6 or is not a host
 	if !IsAccepted(target.Resolver) &&
-	 IsIP(proxy.Resolver.(net.IP)){
+		IsIP(proxy.Resolver.(net.IP)) {
 		err = ErrATYP
 	}
 
@@ -69,7 +69,7 @@ func (c *Socks5Client) setup() chan error {
 		c.TCPConn = conn
 		go c.tunnel()
 	}()
-	
+
 	return c.worker
 }
 
@@ -89,13 +89,13 @@ func (c *Socks5Client) tunnel() {
 		c.worker <- err
 	}()
 
-	AUTH := no_auth
+	AUTH := NO_AUTH
 	if len(c.Username) > 0 || len(c.Password) > 0 {
-		AUTH = uname_pwd
+		AUTH = UNAME_PWD
 	}
 
 	var PACKET []byte = []byte{SOCKS5, uint8(1), AUTH}
-	
+
 	n, err := c.Write(PACKET)
 	if err != nil || !(n > 0) {
 		if !(n > 0) {
@@ -113,14 +113,14 @@ func (c *Socks5Client) tunnel() {
 		return
 	}
 
-	if !(PACKET[0] ==  SOCKS5 && PACKET[1] == AUTH) {
+	if !(PACKET[0] == SOCKS5 && PACKET[1] == AUTH) {
 		err = ErrAuthFailed
 		return
 	}
-	
+
 	PACKET = []byte{} // clear
 
-	if AUTH == uname_pwd {
+	if AUTH == UNAME_PWD {
 		PACKET = append(PACKET, 0x01)
 		PACKET = append(PACKET, uint8(len(c.Username)))
 		PACKET = append(PACKET, []byte(c.Username)...)
@@ -149,29 +149,29 @@ func (c *Socks5Client) tunnel() {
 			return
 		}
 	}
-	
+
 	PACKET = make([]byte, 0)
 	{
 		PACKET = append(PACKET, SOCKS5, CMD, 0x00)
 		switch ATYP := c.target.Resolver.(type) {
-			case net.IP:
-				if IsIPV4(ATYP){
-					PACKET = append(PACKET, 0x01) // 0x01: IPv4 address
-					PACKET = append(PACKET, ATYP.To4()...)
-				} else if IsIPV6(ATYP) {
-					PACKET = append(PACKET, 0x04) // 0x04: IPv6 address
-					PACKET = append(PACKET, ATYP.To16()...)
-				} else {
-					err = ErrATYP
-					return
-				}
-			case string:
-				PACKET = append(PACKET, 0x03) // 0x03: Domain name
-				PACKET = append(PACKET, uint8(len(ATYP)))
-				PACKET = append(PACKET, []byte(ATYP)...)
-			default:
+		case net.IP:
+			if IsIPV4(ATYP) {
+				PACKET = append(PACKET, 0x01) // 0x01: IPv4 address
+				PACKET = append(PACKET, ATYP.To4()...)
+			} else if IsIPV6(ATYP) {
+				PACKET = append(PACKET, 0x04) // 0x04: IPv6 address
+				PACKET = append(PACKET, ATYP.To16()...)
+			} else {
 				err = ErrATYP
 				return
+			}
+		case string:
+			PACKET = append(PACKET, 0x03) // 0x03: Domain name
+			PACKET = append(PACKET, uint8(len(ATYP)))
+			PACKET = append(PACKET, []byte(ATYP)...)
+		default:
+			err = ErrATYP
+			return
 		}
 
 		PORT := make([]byte, 2)
@@ -200,7 +200,6 @@ func (c *Socks5Client) tunnel() {
 
 		if !(PACKET[0] == SOCKS5 && PACKET[1] == 0x00) {
 			err = errors.New(status_enum[PACKET[1]])
-		} 
+		}
 	}
-
 }

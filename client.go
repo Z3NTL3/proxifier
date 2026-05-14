@@ -13,22 +13,22 @@ type Context struct {
 
 // Core proxy client
 type Client struct {
-	*net.TCPConn // underyling tcp connection
-	target *Context // target context
-	proxy  *Context // proxy context
-	worker chan error // synchronization primitive
+	*net.TCPConn            // underyling tcp connection
+	target       *Context   // target context
+	proxy        *Context   // proxy context
+	worker       chan error // synchronization primitive
 }
 
 // SOCKS5 client
 type Socks4Client struct {
-	Client // core client
-	UID []byte // userid, defaults to null
+	Client        // core client
+	UID    []byte // userid, defaults to null
 }
 
 // SOCKS5 client
 type Socks5Client struct {
 	Client // core client
-	Auth // authentication context
+	Auth   // authentication context
 }
 
 // Authentication credentials
@@ -53,26 +53,22 @@ const (
 )
 
 // Creates new [SocksClient].
-//
-// ``target`` and ``proxy`` comfort [Context]
-//
-// On failure, returns error.
 func New[T SocksClient](client T, target, proxy Context) (T, error) {
 	return client, client.init(&target, &proxy)
 }
 
-// Tunnels through proxy to target. On failure returns error.
+// Tunnels through proxy to target
 //
-// ``ctx`` is a [context.Context] used for timeout/cancellation signal.
+// “ctx“ is a [context.Context] used for timeout/cancellation signal.
 func Connect[T SocksClient](client T, ctx context.Context) error {
 	worker := client.setup()
 
 	select {
-		case <-ctx.Done():
-			return ctx.Err()
+	case <-ctx.Done():
+		return ctx.Err()
 
-		case err := <-worker:
-			close(worker)
-			return err
+	case err := <-worker:
+		close(worker)
+		return err
 	}
 }

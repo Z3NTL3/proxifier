@@ -11,10 +11,9 @@ type (
 )
 
 const (
-	SOCKS4 byte = 0x04
-	granted reply = 0x5A // Request granted
+	SOCKS4  byte  = 0x04
+	GRANTED reply = 0x5A // Request granted
 )
-
 
 var (
 	UID_NULL []byte = []byte{NULL} // for convenience
@@ -44,13 +43,13 @@ func (c *Socks4Client) init(target, proxy *Context) (err error) {
 		return ErrNotIPV4
 	}
 
-	c.Client =  Client{
+	c.Client = Client{
 		target: target,
 		proxy:  proxy,
 		worker: make(chan error),
 	}
 	c.UID = UID_NULL
-	
+
 	return nil
 }
 
@@ -65,7 +64,7 @@ func (c *Socks4Client) setup() chan error {
 	if !has_null {
 		c.UID = append(c.UID, NULL)
 	}
-	
+
 	go func() {
 		conn, err := net.DialTCP("tcp", nil, &net.TCPAddr{
 			IP:   c.proxy.Resolver.(net.IP),
@@ -102,6 +101,7 @@ func (c *Socks4Client) tunnel(uid []byte) {
 	var PACKET []byte
 	{
 		PORT := make([]byte, 2)
+		// network byte order
 		binary.BigEndian.PutUint16(PORT, uint16(c.target.Port))
 
 		PACKET = append(PACKET, SOCKS4)
@@ -125,7 +125,7 @@ func (c *Socks4Client) tunnel(uid []byte) {
 		return
 	}
 
-	if PACKET[1] != granted {
+	if PACKET[1] != GRANTED {
 		err = errors.New(reply_enum[PACKET[1]])
 	}
 }
