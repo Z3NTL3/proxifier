@@ -11,6 +11,10 @@
 
 Reliable proxy client library for Go programs with no dependency.
 
+> Rust port of this package: [proxifier-rs](https://github.com/z3ntl3/proxifier-rs)
+>
+> Go package ``proxifier`` is currently in the progress of getting a refactor in ``v2``
+
 #### Features
 
 - [x] TLS - tunneling through outer layer
